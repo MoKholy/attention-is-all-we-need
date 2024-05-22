@@ -1,5 +1,7 @@
-import torch.nn as nn
 from math import sqrt
+
+import torch.nn as nn
+import torch.nn.functional as F
 
 
 class MultiHeadAttention(nn.Module):
@@ -34,13 +36,13 @@ class MultiHeadAttention(nn.Module):
         batch_size, seq_len, _ = q.shape
         # change shape for multihead attentions
         q = q.view(
-            batch_size, seq_len, self.n_heads, self.head_size
+            batch_size, seq_len, self.n_heads, self.head_dim
         )  # B x seq_len x n_heads x head_dim
         k = k.view(
-            batch_size, seq_len, self.n_heads, self.head_size
+            batch_size, seq_len, self.n_heads, self.head_dim
         )  # B x seq_len x n_heads x head_dim
         v = v.view(
-            batch_size, seq_len, self.n_heads, self.head_size
+            batch_size, seq_len, self.n_heads, self.head_dim
         )  # B x seq_len x n_heads x head_dim
 
         # transpose, so each head sees seq_len x head_dim
@@ -51,12 +53,11 @@ class MultiHeadAttention(nn.Module):
 
         # compute attention
         x, self.attn_scores = MultiHeadAttention.attention(q, k, v, mask, self.dropout)
-
         # B x n_heads x seq_len x head_dim -> B x seq_len x n_heads x head_dim -> B x seq_len x embed_dim
         x = (
             x.transpose(1, 2)
             .contiguous()
-            .view(batch_size, seq_len, self.n_heads * self.head_size)
+            .view(batch_size, seq_len, self.n_heads * self.head_dim)
         )
 
         # B x seq_len x embed_dim -> B x seq_len x embed_dim
@@ -72,12 +73,15 @@ class MultiHeadAttention(nn.Module):
         # B x n_heads x seq_len x seq_len after matmul which is needed later when we multiply by V
         attn_scores = (q @ k.transpose(2, 3)) / sqrt(head_dim)
 
-        if mask:
-            attn_scores = attn_scores.masked_fill_(mask == 0, value=float("-inf"))
+        if mask is not None:
+            attn_scores = attn_scores.masked_fill_(mask == False, value=float("-inf"))
+
+        # apply softmax as done in paper
+        attn_scores = F.softmax(attn_scores, dim=-1)
+
         if dropout:
             attn_scores = dropout(attn_scores)
 
         # x: B x n_heads x seq_len x head_dim
         x = attn_scores @ v
-
         return x, attn_scores

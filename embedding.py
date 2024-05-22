@@ -1,6 +1,7 @@
-import torch.nn as nn
-import torch
 from math import sqrt
+
+import torch
+import torch.nn as nn
 
 
 class Embedding(nn.Module):

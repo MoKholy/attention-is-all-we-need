@@ -1,5 +1,5 @@
-import torch.nn as nn
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 
 
@@ -16,3 +16,9 @@ class FeedForward(nn.Module):
         x = self.dropout(x)
         x = self.w2(x)
         return x
+
+
+if __name__ == "__main__":
+    ffn = FeedForward(5, 3, 0.5)
+    x = torch.Tensor([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
+    print(f"{ffn(x).shape = }")

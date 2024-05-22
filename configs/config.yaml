@@ -1,0 +1,16 @@
+---
+model:
+  general:
+      n_heads: 4
+      embed_dim: 16
+      ffn_dim: 32
+      n_layers: 2
+      eps: 1.0e-6
+      attn_dropout: 0.1
+      ffn_dropout: 0.1
+  encoder:
+      input_vocab_size: 20
+      input_seq_len: 7
+  decoder:
+      output_vocab_size: 20
+      output_seq_len: 7

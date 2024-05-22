@@ -1,5 +1,5 @@
-import torch.nn as nn
 import torch
+import torch.nn as nn
 
 
 class LayerNorm(nn.Module):
@@ -11,9 +11,8 @@ class LayerNorm(nn.Module):
         self.beta = nn.Parameter(torch.zeros(dim))  # add
 
     def forward(self, x):
-        # get mean and std for each sentence
-        mu = x.mean(dim=-1, keep_dim=True)
-        std = x.std(dim=-1, keed_dim=True)
-
+        # get mean and std for each sent
+        mu = x.mean(dim=-1, keepdim=True)
+        std = x.std(dim=-1, keepdim=True)
         x = self.alpha * ((x - mu) / (std + self.eps)) + self.beta
         return x

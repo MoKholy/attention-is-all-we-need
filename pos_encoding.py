@@ -1,6 +1,7 @@
+from math import log
+
 import torch
 import torch.nn as nn
-from math import log
 
 
 class PositionalEncoding(nn.Module):
@@ -8,7 +9,7 @@ class PositionalEncoding(nn.Module):
     def __init__(
         self,
         embed_dim: int = 512,
-        max_seq_len: int = 2048,
+        max_seq_len: int = 5000,
     ):
         super().__init__()
         self.embed_dim = embed_dim
