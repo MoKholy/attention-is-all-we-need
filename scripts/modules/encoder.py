@@ -1,10 +1,10 @@
 import torch.nn as nn
 
-from attention import MultiHeadAttention
-from embedding import Embedding
-from ffn import FeedForward
-from layer_norm import LayerNorm
-from pos_encoding import PositionalEncoding
+from scripts.modules.attention import MultiHeadAttention
+from scripts.modules.embedding import Embedding
+from scripts.modules.ffn import FeedForward
+from scripts.modules.layer_norm import LayerNorm
+from scripts.modules.pos_encoding import PositionalEncoding
 
 
 class EncoderBlock(nn.Module):
@@ -65,12 +65,10 @@ class Encoder(nn.Module):
                 for _ in range(n_layers)
             ]
         )
-        self.final_norm = LayerNorm(embed_dim, eps)
 
     def forward(self, x, mask):
         x = self.input_embedding(x)
         x = self.positional_encoding(x)
         for layer in self.layers:
             x = layer(x, mask)
-        x = self.final_norm(x)
         return x
