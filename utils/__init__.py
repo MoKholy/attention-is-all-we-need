@@ -1,3 +1,2 @@
-from data_utils import *
-
-from utils import *
+from .data_utils import *
+from .utils import *
