@@ -1,4 +1,5 @@
 ---
+# this is for a unit test
 model:
   general:
       n_heads: 4
@@ -8,6 +9,7 @@ model:
       eps: 1.0e-6
       attn_dropout: 0.1
       ffn_dropout: 0.1
+      pe_dropout: 0.1
   encoder:
       input_vocab_size: 20
       input_seq_len: 7

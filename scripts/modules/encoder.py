@@ -50,13 +50,15 @@ class Encoder(nn.Module):
         n_layers: int,
         attn_dropout: float,
         ffn_dropout: float,
-        eps: float,
+        pe_dropout: float,
+        eps: float = 1e-6,
     ) -> None:
 
         super().__init__()
         # create embedding
         self.input_embedding = Embedding(vocab_size, embed_dim)
         self.positional_encoding = PositionalEncoding(embed_dim, seq_len)
+        self.dropout = nn.Dropout(pe_dropout)
         self.layers = nn.ModuleList(
             [
                 EncoderBlock(
@@ -69,6 +71,7 @@ class Encoder(nn.Module):
     def forward(self, x, mask):
         x = self.input_embedding(x)
         x = self.positional_encoding(x)
+        x = self.dropout(x)
         for layer in self.layers:
             x = layer(x, mask)
         return x

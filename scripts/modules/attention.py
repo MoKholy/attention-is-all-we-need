@@ -34,7 +34,7 @@ class MultiHeadAttention(nn.Module):
         v = self.vw(v)  # B x seq_len x embed_dim
 
         batch_size, seq_len, _ = q.shape
-        # change shape for multihead attentions
+        # change shape for multihead attention
         q = q.view(
             batch_size, seq_len, self.n_heads, self.head_dim
         )  # B x seq_len x n_heads x head_dim
@@ -74,7 +74,7 @@ class MultiHeadAttention(nn.Module):
         attn_scores = (q @ k.transpose(2, 3)) / sqrt(head_dim)
 
         if mask is not None:
-            attn_scores = attn_scores.masked_fill_(mask == False, value=float("-inf"))
+            attn_scores = attn_scores.masked_fill_(mask, value=float("-inf"))
 
         # apply softmax as done in paper
         attn_scores = F.softmax(attn_scores, dim=-1)

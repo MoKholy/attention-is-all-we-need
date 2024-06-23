@@ -6,6 +6,7 @@ from torch.nn.init import xavier_uniform_
 
 from scripts.modules.decoder import Decoder
 from scripts.modules.encoder import Encoder
+from utils import *
 
 
 class Transformer(nn.Module):
@@ -21,6 +22,7 @@ class Transformer(nn.Module):
         n_layers: int,
         attn_dropout: float,
         ffn_dropout: float,
+        pe_dropout: float,
         eps: float,
     ) -> None:
         super().__init__()
@@ -33,6 +35,7 @@ class Transformer(nn.Module):
             n_layers,
             attn_dropout,
             ffn_dropout,
+            pe_dropout,
             eps,
         )
         self.decoder = Decoder(
@@ -44,6 +47,7 @@ class Transformer(nn.Module):
             n_layers,
             attn_dropout,
             ffn_dropout,
+            pe_dropout,
             eps,
         )
         self.final_layer = nn.Linear(embed_dim, output_vocab_size)
@@ -87,7 +91,7 @@ class TestTransformer(unittest.TestCase):
         # load config file
         import yaml
 
-        with open("configs/config.yaml", "r") as file:
+        with open("configs/test_config.yaml", "r") as file:
             config = yaml.safe_load(file)
 
         general = config["model"]["general"]
@@ -100,7 +104,7 @@ class TestTransformer(unittest.TestCase):
         # load config file
         import yaml
 
-        with open("configs/config.yaml", "r") as file:
+        with open("configs/test_config.yaml", "r") as file:
             config = yaml.safe_load(file)
 
         general = config["model"]["general"]
@@ -110,10 +114,9 @@ class TestTransformer(unittest.TestCase):
             transformer = Transformer(**general, **encoder, **decoder)
             transformer.eval()
 
-            # create input tensor
-            # let 9 be pad token idx
+            # create arbitrary input tensor, let 9 be pad token idx
             encoder_input = torch.IntTensor([1, 2, 3, 4, 9, 9, 9])
-            input_mask = encoder_input != 9
+            input_mask = get_pad_mask(encoder_input, 9)
             encoder_output = transformer.encoder(encoder_input, input_mask)
             # check encoder output has no NaNs
             self.assertEqual(torch.any(torch.isnan(encoder_output)), False)
@@ -122,13 +125,13 @@ class TestTransformer(unittest.TestCase):
             # B=1, seq_len = 7, embed_dim = 16
             self.assertEqual(torch.Size([1, 7, 16]), encoder_output.shape)
 
-            # create output_mask
-            # both equivalent
-            output_mask = torch.tril(torch.ones((1, 7, 7))) == 1
-            # mask = torch.triu(torch.ones((1, 7, 7)), diagonal=1).type(torch.int) == 0
-
             # create decoder input, assume start of speech token is 1
             decoder_input = torch.IntTensor([[1, 2, 3, 4, 7, 7, 6]])
+            output_mask = get_causal_mask(decoder_input) | get_pad_mask(
+                decoder_input, 9
+            )
+            print(f"{output_mask = }")
+            print(f"{input_mask = }")
             logits = transformer(encoder_input, input_mask, decoder_input, output_mask)
 
             # check logits shape is correct

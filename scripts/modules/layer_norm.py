@@ -13,6 +13,6 @@ class LayerNorm(nn.Module):
     def forward(self, x):
         # get mean and std for each sent
         mu = x.mean(dim=-1, keepdim=True)
-        std = x.std(dim=-1, keepdim=True)
+        std = x.std(dim=-1, keepdim=True, unbiased=False)
         x = self.alpha * ((x - mu) / (std + self.eps)) + self.beta
         return x

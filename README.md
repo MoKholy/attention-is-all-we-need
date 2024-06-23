@@ -4,12 +4,11 @@ Yet another implementation of the Attention is All You Need paper: https://arxiv
 
 ## WIP
 - [x] Build Transformer architecture
-- [x] Add testcases to check architecture works
-- [ ] Correct dropout and norm layers
+- [x] Add test cases to check architecture works
+- [x] Correct dropout and norm layers
 - [ ] Add dataset class and data pipeline
-- [ ] Add different optimizers and lr schedulers
+- [x] Add Warmup lr scheduler
 - [ ] Build Training pipeline
 - [ ] Add label smoothing
 - [ ] Add weights & biases metrics tracking
 - [ ] Train on some dataset ( current ideas include franco to arabic)
-
