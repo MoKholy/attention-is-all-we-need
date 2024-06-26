@@ -26,7 +26,7 @@ class WordLevelTokenizer:
 
     def tokenize(self, sentence: str, add_special_tokens: bool) -> list:
 
-        # split into wokens of words, digits and punctuations
+        # split into tokens of words, digits and punctuations
         tokens = re.findall(r"\w+|[^\w\s]+", sentence)
 
         if add_special_tokens:
